@@ -1,0 +1,68 @@
+<!--https://medium.com/@victortoschi/how-to-create-a-slot-machine-animation-with-css-and-javascript-9073ab9db9ea-->
+<!DOCTYPE html>
+
+<head>
+    <style>
+        .test {
+            overflow: hidden;
+            height: 20px;
+        }
+
+        .item {
+            background: url("./bg.jpg") repeat;
+            width: 100px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="machine" class="test">
+        <div class="item">Madrid</div>
+        <div class="item">London</div>
+        <div class="item">New York</div>
+    </div>
+    <button onclick="start()">start</button>
+    <button onclick="stop()">stop</button>
+    <script src="/path/to/jquery-3.6.1.min.js"></script>
+    <script src="/path/to/slotmachine.min.js"></script>
+    <script src="/path/to/jquery.slotmachine.min.js"></script>
+    <script>
+        var machine;
+        $(document).ready(function () {
+            // $('#my-machine').slotMachine({ /* options */ });
+
+            const el = document.querySelector('#machine');
+            let setting = {}
+            setting.active = 1;//The initial visible element (0 means the first one)
+            setting.delay = 450;//Duration (in ms) of each spin
+            setting.auto = 1500;//Runs the carousel mode when creating the machine
+            // setting.spins = 5;//Number of spins after stop in carousel mode
+            //Function (returns number) that is going to be called to set the next active element
+            // setting.randomize = (v) => {
+            //     console.log(v);
+            //     return this.nextIndex;
+            // };
+            //Callback after each spin in carousel mode
+            setting.onComplete = () => {
+                console.log("complete!");
+            };
+            setting.inViewport = true;//Only spin when the machine is inside the viewport
+            setting.direction = "down";//The spin direction (possible values are up and down)
+            setting.transition = "ease-out";//The CSS transition
+            machine = new SlotMachine(el, setting);
+
+
+        });
+        function start() {
+            console.warn('start!');
+            machine.shuffle(10);
+        }
+        function stop() {
+            console.warn('stop!');
+            machine.stop();
+        }
+    </script>
+
+</body>
