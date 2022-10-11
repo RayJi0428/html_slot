@@ -17,9 +17,25 @@
     ];
     const doors = document.querySelectorAll('.door');
 
+    //監聽SPIN(後續改SR觸發)
     document.querySelector('#spinner').addEventListener('click', spin);
-    document.querySelector('#reseter').addEventListener('click', init);
 
+    //生成item數量
+    const NUM_ITEM = 15;
+    //彩券位數
+    const LOTTERY_DIGIT = 7;
+    //啟動到停止秒數
+    const SPIN_DURATION = 1;
+    //目前第一顆內容
+    var head = 'ready!';
+
+    /**
+     * 啟動
+     * @param {*} firstInit 
+     * @param {*} groups 
+     * @param {*} duration 
+     * @returns 
+     */
     function init(firstInit = true, groups = 1, duration = 1) {
         for (const door of doors) {
 
@@ -31,21 +47,22 @@
 
             const boxes = door.querySelector('.boxes');
             const boxesClone = boxes.cloneNode(false);
-            const pool = ['❓'];
+            //頭要先塞上次最後結果
+            let pool = [head];
 
             if (!firstInit) {
                 const arr = [];
-                for (let n = 0; n < (groups > 0 ? groups : 1); n++) {
-                    arr.push(...items);
+                for (let i = 0; i < NUM_ITEM; ++i) {
+                    arr.push(randomNum(LOTTERY_DIGIT));
                 }
-                pool.push(...shuffle(arr));
+                pool = pool.concat(arr);
 
                 boxesClone.addEventListener(
                     'transitionstart',
                     function () {
                         door.dataset.spinned = '1';
                         this.querySelectorAll('.box').forEach((box) => {
-                            box.style.filter = 'blur(1px)';
+                            box.style.filter = 'blur(2px)';
                         });
                     },
                     { once: true }
@@ -54,6 +71,8 @@
                 boxesClone.addEventListener(
                     'transitionend',
                     function () {
+                        //動畫結束後要更新head下次使用
+                        head = arr[arr.length - 1];
                         this.querySelectorAll('.box').forEach((box, index) => {
                             box.style.filter = 'blur(0)';
                             if (index > 0) this.removeChild(box);
@@ -81,7 +100,12 @@
      * 開始轉動
      */
     async function spin() {
-        init(false, 1, 0.5);
+        //spin前先重置
+        init();
+        //開始轉動
+        init(false, 1, SPIN_DURATION);
+
+        //只塞第一個
         let door = doors[0]
         const boxes = door.querySelector('.boxes');
         const duration = parseFloat(boxes.style.transitionDuration);
@@ -93,7 +117,7 @@
     }
 
     /**
-     * 隨機輪帶
+     * 對目標陣列隨機排序(目前用不到先留著)
      * @param {*} param0 
      * @returns 
      */
@@ -104,6 +128,14 @@
             [arr[m], arr[i]] = [arr[i], arr[m]];
         }
         return arr;
+    }
+
+    function randomNum(n) {
+        let res = '';
+        for (let i = 0; i < n; ++i) {
+            res += Math.floor(Math.random() * 10);
+        }
+        return res;
     }
 
     init();
